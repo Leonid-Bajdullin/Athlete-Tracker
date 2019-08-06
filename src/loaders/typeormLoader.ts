@@ -1,10 +1,10 @@
 import {
     MicroframeworkLoader,
     MicroframeworkSettings
-} from "microframework-w3tec";
-import { createConnection, getConnectionOptions } from "typeorm";
+} from 'microframework-w3tec';
+import { createConnection, getConnectionOptions } from 'typeorm';
 
-import { env } from "../env";
+import { env } from '../env';
 
 export const typeormLoader: MicroframeworkLoader = async (
     settings: MicroframeworkSettings | undefined
@@ -27,7 +27,7 @@ export const typeormLoader: MicroframeworkLoader = async (
     const connection = await createConnection(connectionOptions);
 
     if (settings) {
-        settings.setData("connection", connection);
+        settings.setData('connection', connection);
         settings.onShutdown(() => connection.close());
     }
 };

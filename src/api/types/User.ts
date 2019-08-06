@@ -1,36 +1,36 @@
-import { Field, ID, ObjectType } from "type-graphql";
+import { Field, ID, ObjectType } from 'type-graphql';
 
 // import { Pet } from "./Pet";
 
 @ObjectType({
-    description: "User object."
+    description: 'User object.'
 })
 export class User {
     @Field((type) => ID)
     public id: string;
 
     @Field({
-        description: "The first name of the user."
+        description: 'The first name of the user.'
     })
     public firstName: string;
 
     @Field({
-        description: "The last name of the user."
+        description: 'The last name of the user.'
     })
     public lastName: string;
 
     @Field({
-        description: "The nickname of the user."
+        description: 'The nickname of the user.'
     })
     public nickname: string;
 
     @Field({
-        description: "The address of the user."
+        description: 'The address of the user.'
     })
     public address: string;
 
     @Field({
-        description: "The email of the user."
+        description: 'The email of the user.'
     })
     public email: string;
 

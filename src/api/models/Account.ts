@@ -1,9 +1,9 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToOne } from "typeorm";
-import { User } from "./User";
+import { Entity, PrimaryGeneratedColumn, Column, OneToOne } from 'typeorm';
+import { User } from './User';
 
 @Entity()
 export class Account {
-    @PrimaryGeneratedColumn({ name: "user_id" })
+    @PrimaryGeneratedColumn({ name: 'user_id' })
     public userId: string;
 
     @Column()

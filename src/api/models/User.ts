@@ -1,6 +1,6 @@
-import * as bcrypt from "bcrypt";
-import { Exclude } from "class-transformer";
-import { IsNotEmpty } from "class-validator";
+import * as bcrypt from 'bcrypt';
+import { Exclude } from 'class-transformer';
+import { IsNotEmpty } from 'class-validator';
 import {
     Column,
     Entity,
@@ -9,10 +9,10 @@ import {
     JoinColumn,
     ManyToMany,
     JoinTable
-} from "typeorm";
-import { Account } from "./Account";
-import { Role } from "./Role";
-import { Permission } from "./Permission";
+} from 'typeorm';
+import { Account } from './Account';
+import { Role } from './Role';
+import { Permission } from './Permission';
 
 // import { Pet } from './Pet';
 
@@ -21,10 +21,10 @@ export class User {
     @PrimaryGeneratedColumn()
     public id: string;
 
-    @Column({ name: "first_name" })
+    @Column({ name: 'first_name' })
     public firstName: string;
 
-    @Column({ name: "last_name" })
+    @Column({ name: 'last_name' })
     public lastName: string;
 
     @Column()
@@ -50,11 +50,11 @@ export class User {
 
     @ManyToMany(() => Role)
     @JoinTable()
-    roles: Role[];
+    public roles: Role[];
 
     @ManyToMany(() => Permission)
     @JoinTable()
-    permissions: Permission[];
+    public permissions: Permission[];
 
     public static hashPassword(password: string): Promise<string> {
         return new Promise((resolve, reject) => {
