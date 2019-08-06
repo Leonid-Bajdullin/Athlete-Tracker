@@ -1,12 +1,9 @@
-import { IsNotEmpty } from 'class-validator';
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
-
-import { User } from './User';
+import { IsNotEmpty } from "class-validator";
+import { Column, Entity, PrimaryColumn } from "typeorm";
 
 @Entity()
 export class Pet {
-
-    @PrimaryColumn('uuid')
+    @PrimaryColumn("uuid")
     public id: string;
 
     @IsNotEmpty()
@@ -18,17 +15,12 @@ export class Pet {
     public age: number;
 
     @Column({
-        name: 'user_id',
-        nullable: true,
+        name: "user_id",
+        nullable: true
     })
     public userId: string;
-
-    @ManyToOne(type => User, user => user.pets)
-    @JoinColumn({ name: 'user_id' })
-    public user: User;
 
     public toString(): string {
         return `${this.name}`;
     }
-
 }
