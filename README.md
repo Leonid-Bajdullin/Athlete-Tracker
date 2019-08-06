@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <p align="center">
   <img src="./w3tec-logo.png" alt="w3tec" width="400" />
 </p>
@@ -561,3 +562,6 @@ DB_PORT=3306
 ## ❯ License
 
 [MIT](/LICENSE)
+=======
+# express-typescript-boilerplate
+>>>>>>> a434c071d6fbfdad2e4e461d1ada17e38a9dc529
