@@ -6,6 +6,7 @@ import {
     Entity,
     PrimaryGeneratedColumn,
     OneToOne,
+    OneToMany,
     JoinColumn,
     ManyToMany,
     JoinTable
@@ -13,11 +14,34 @@ import {
 import { Account } from './Account';
 import { Role } from './Role';
 import { Permission } from './Permission';
+import { UserTeam } from './UserTeam';
 
 // import { Pet } from './Pet';
 
 @Entity()
 export class User {
+    public static hashPassword(password: string): Promise<string> {
+        return new Promise((resolve, reject) => {
+            bcrypt.hash(password, 10, (err, hash) => {
+                if (err) {
+                    return reject(err);
+                }
+                resolve(hash);
+            });
+        });
+    }
+
+    public static comparePassword(
+        user: User,
+        password: string
+    ): Promise<boolean> {
+        return new Promise((resolve, reject) => {
+            bcrypt.compare(password, user.password, (err, res) => {
+                resolve(res === true);
+            });
+        });
+    }
+
     @PrimaryGeneratedColumn()
     public id: string;
 
@@ -48,6 +72,9 @@ export class User {
     @JoinColumn()
     public account: Account;
 
+    @OneToMany((type) => UserTeam, (userTeam) => userTeam.user)
+    public userTeams: UserTeam[];
+
     @ManyToMany(() => Role)
     @JoinTable()
     public roles: Role[];
@@ -55,28 +82,6 @@ export class User {
     @ManyToMany(() => Permission)
     @JoinTable()
     public permissions: Permission[];
-
-    public static hashPassword(password: string): Promise<string> {
-        return new Promise((resolve, reject) => {
-            bcrypt.hash(password, 10, (err, hash) => {
-                if (err) {
-                    return reject(err);
-                }
-                resolve(hash);
-            });
-        });
-    }
-
-    public static comparePassword(
-        user: User,
-        password: string
-    ): Promise<boolean> {
-        return new Promise((resolve, reject) => {
-            bcrypt.compare(password, user.password, (err, res) => {
-                resolve(res === true);
-            });
-        });
-    }
 }
 
 // public static hashPassword(password: string): Promise<string> {

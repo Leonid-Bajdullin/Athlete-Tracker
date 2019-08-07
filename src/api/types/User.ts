@@ -34,6 +34,11 @@ export class User {
     })
     public email: string;
 
+    @Field({
+        description: 'Teams of the user.'
+    })
+    public userTeams: string;
+
     // @Field(type => [Pet], {
     //     description: 'A list of pets which belong to the user.',
     // })

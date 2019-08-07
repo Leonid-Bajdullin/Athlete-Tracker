@@ -19,9 +19,9 @@ export class Account {
     //     request: express.Request,
     //     response: express.Response
     // ) => {
-    //     const addresses = await this.addressRepository.find({
+    //     const accounts = await this.accountRepository.find({
     //         relations: ["user"]
     //     });
-    //     response.send(addresses);
+    //     response.send(accounts);
     // };
 }

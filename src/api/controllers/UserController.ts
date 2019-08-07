@@ -1,18 +1,24 @@
 import {
-    Authorized, Body, Delete, Get, JsonController, OnUndefined, Param, Post, Put, Req
+    Body,
+    Delete,
+    Get,
+    JsonController,
+    OnUndefined,
+    Param,
+    Post,
+    Put,
+    Req
 } from 'routing-controllers';
 
 import { UserNotFoundError } from '../errors/UserNotFoundError';
 import { User } from '../models/User';
 import { UserService } from '../services/UserService';
+import { UserRequestDto } from '../dto/UserRequestDto';
 
-@Authorized()
+// @Authorized()
 @JsonController('/users')
 export class UserController {
-
-    constructor(
-        private userService: UserService
-    ) { }
+    constructor(private userService: UserService) {}
 
     @Get()
     public find(): Promise<User[]> {
@@ -31,7 +37,7 @@ export class UserController {
     }
 
     @Post()
-    public create(@Body() user: User): Promise<User> {
+    public create(@Body() user: UserRequestDto): Promise<User> {
         return this.userService.create(user);
     }
 
@@ -44,5 +50,4 @@ export class UserController {
     public delete(@Param('id') id: string): Promise<void> {
         return this.userService.delete(id);
     }
-
 }
