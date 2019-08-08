@@ -32,7 +32,7 @@ export class UserController {
 
     @Get('/:id')
     @OnUndefined(UserNotFoundError)
-    public one(@Param('id') id: string): Promise<User | undefined> {
+    public findOne(@Param('id') id: string): Promise<User | undefined> {
         return this.userService.findOne(id);
     }
 
@@ -42,12 +42,15 @@ export class UserController {
     }
 
     @Put('/:id')
-    public update(@Param('id') id: string, @Body() user: User): Promise<User> {
+    public update(
+        @Param('id') id: string,
+        @Body() user: UserRequestDto
+    ): Promise<User> {
         return this.userService.update(id, user);
     }
 
     @Delete('/:id')
-    public delete(@Param('id') id: string): Promise<void> {
+    public delete(@Param('id') id: string): Promise<string> {
         return this.userService.delete(id);
     }
 }
