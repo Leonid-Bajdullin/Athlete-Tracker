@@ -38,15 +38,16 @@ export class UserService {
         return newUser;
     }
 
-    public update(id: string, user: User): Promise<User> {
+    public update(id: string, user: UserRequestDto): Promise<User> {
         this.log.info('Update a user');
         user.id = id;
         return this.userRepository.save(user);
     }
 
-    public async delete(id: string): Promise<void> {
+    public async delete(id: string): Promise<string> {
         this.log.info('Delete a user');
         await this.userRepository.delete(id);
-        return;
+        const deleteMessage = `User with userID=${id} deleted successfully!`;
+        return deleteMessage;
     }
 }
