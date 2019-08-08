@@ -1,7 +1,9 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
 // import { User } from '../types/User';
 import { User } from './User';
 import { Team } from './Team';
+import { Role } from './Role';
+import { Permission } from './Permission';
 
 @Entity()
 export class UserTeam {
@@ -11,9 +13,7 @@ export class UserTeam {
     @PrimaryGeneratedColumn()
     public teamId: string;
 
-    @Column()
-    public role: string;
-
+    // Relations
     @ManyToOne((type) => User, (user) => user.userTeams, {
         primary: true,
         onDelete: 'CASCADE'
@@ -25,4 +25,10 @@ export class UserTeam {
         onDelete: 'CASCADE'
     })
     public team: Team;
+
+    @ManyToOne((type) => Role, (role) => role.user)
+    public role: Role;
+
+    @ManyToOne((type) => Permission, (permission) => permission.user)
+    public permission: Permission;
 }
