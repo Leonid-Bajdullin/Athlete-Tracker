@@ -1,17 +1,19 @@
-import { Entity, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, ManyToOne, Column } from 'typeorm';
 // import { User } from '../types/User';
 import { User } from './User';
 import { Team } from './Team';
-import { Role } from './Role';
 import { Permission } from './Permission';
 
 @Entity()
 export class UserTeam {
-    @PrimaryGeneratedColumn()
+    @PrimaryGeneratedColumn({ name: 'user_id' })
     public userId: string;
 
-    @PrimaryGeneratedColumn()
+    @PrimaryGeneratedColumn({ name: 'team_id' })
     public teamId: string;
+
+    @Column()
+    public position: string;
 
     // Relations
     @ManyToOne((type) => User, (user) => user.userTeams, {
@@ -26,9 +28,6 @@ export class UserTeam {
     })
     public team: Team;
 
-    @ManyToOne((type) => Role, (role) => role.user)
-    public role: Role;
-
-    @ManyToOne((type) => Permission, (permission) => permission.user)
+    @ManyToOne((type) => Permission, (permission) => permission.users)
     public permission: Permission;
 }

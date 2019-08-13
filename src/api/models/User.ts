@@ -1,41 +1,16 @@
-import * as bcrypt from 'bcrypt';
-import { Exclude } from 'class-transformer';
-import { IsNotEmpty } from 'class-validator';
 import {
     Column,
     Entity,
     PrimaryGeneratedColumn,
-    OneToOne,
+    ManyToOne,
     OneToMany
 } from 'typeorm';
 import { Account } from './Account';
 import { UserTeam } from './UserTeam';
+import { Role } from './Role';
 
 @Entity()
 export class User {
-    public static hashPassword(password: string): Promise<string> {
-        return new Promise((resolve, reject) => {
-            bcrypt.hash(password, 10, (err, hash) => {
-                if (err) {
-                    return reject(err);
-                }
-                resolve(hash);
-            });
-        });
-    }
-
-    public static comparePassword(
-        user: User,
-        password: string
-    ): Promise<boolean> {
-        return new Promise((resolve, reject) => {
-            bcrypt.compare(password, user.password, (err, res) => {
-                resolve(res === true);
-            });
-        });
-    }
-
-    // Rows
     @PrimaryGeneratedColumn()
     public id: string;
 
@@ -51,20 +26,22 @@ export class User {
     @Column()
     public email: string;
 
-    @IsNotEmpty()
-    @Column()
-    @Exclude()
-    public password: string;
+    @Column('jsonb')
+    public data: JSON;
 
     @Column()
-    public address: string;
+    public phone: string;
+
+    @Column({ name: 'photo_url' })
+    public photoUrl: string;
 
     // Relations
-    @OneToOne(() => Account, (account: Account) => account.user, {
-        cascade: true
-    })
-    public account: Account;
+    @OneToMany((type) => Account, (account) => account.user)
+    public accounts: Account[];
 
     @OneToMany((type) => UserTeam, (userTeam) => userTeam.user)
     public userTeams: UserTeam[];
+
+    @ManyToOne((type) => Role, (role) => role.users)
+    public role: Role;
 }

@@ -1,24 +1,19 @@
-import {
-    Entity,
-    PrimaryGeneratedColumn,
-    Column,
-    OneToOne,
-    JoinColumn
-} from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
 import { User } from './User';
 
 @Entity()
 export class Account {
-    @PrimaryGeneratedColumn({ name: 'user_id' })
-    public userId: string;
+    @PrimaryGeneratedColumn()
+    public id: string;
 
     @Column()
-    public google: string;
+    public provider: string;
 
     @Column()
-    public facebook: string;
+    public salt: string;
 
-    @OneToOne(() => User, (user: User) => user.account)
-    @JoinColumn()
+    @ManyToOne(() => User, (user: User) => user.accounts, {
+        onDelete: 'CASCADE'
+    })
     public user: User;
 }

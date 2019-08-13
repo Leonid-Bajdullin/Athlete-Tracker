@@ -5,11 +5,11 @@ import { UserTeam } from './UserTeam';
 @Entity()
 export class Team {
     @PrimaryGeneratedColumn()
-    id: string;
+    public id: string;
 
     @Column()
-    name: string;
+    public name: string;
 
     @OneToMany((type) => UserTeam, (userTeam) => userTeam.team)
-    userTeams: UserTeam[];
+    public userTeams: UserTeam[];
 }

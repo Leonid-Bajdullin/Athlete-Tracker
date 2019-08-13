@@ -7,8 +7,8 @@ export class Permission {
     public id: string;
 
     @Column()
-    public type: string;
+    public name: string;
 
     @OneToMany((type) => UserTeam, (userTeam) => userTeam.permission)
-    public user: UserTeam;
+    public users: UserTeam[];
 }
