@@ -3,13 +3,24 @@ import * as path from 'path';
 
 import * as pkg from '../package.json';
 import {
-    getOsEnv, getOsEnvOptional, getOsPath, getOsPaths, normalizePort, toBool, toNumber
+    getOsEnv,
+    getOsEnvOptional,
+    getOsPath,
+    getOsPaths,
+    normalizePort,
+    toBool,
+    toNumber
 } from './lib/env';
 
 /**
  * Load .env file or for tests the .env.test file.
  */
-dotenv.config({ path: path.join(process.cwd(), `.env${((process.env.NODE_ENV === 'test') ? '.test' : '')}`) });
+dotenv.config({
+    path: path.join(
+        process.cwd(),
+        `.env${process.env.NODE_ENV === 'test' ? '.test' : ''}`
+    )
+});
 
 /**
  * Environment variables
@@ -37,13 +48,13 @@ export const env = {
             middlewares: getOsPaths('MIDDLEWARES'),
             interceptors: getOsPaths('INTERCEPTORS'),
             subscribers: getOsPaths('SUBSCRIBERS'),
-            resolvers: getOsPaths('RESOLVERS'),
-        },
+            resolvers: getOsPaths('RESOLVERS')
+        }
     },
     log: {
         level: getOsEnv('LOG_LEVEL'),
         json: toBool(getOsEnvOptional('LOG_JSON')),
-        output: getOsEnv('LOG_OUTPUT'),
+        output: getOsEnv('LOG_OUTPUT')
     },
     db: {
         type: getOsEnv('TYPEORM_CONNECTION'),
@@ -53,24 +64,27 @@ export const env = {
         password: getOsEnvOptional('TYPEORM_PASSWORD'),
         database: getOsEnv('TYPEORM_DATABASE'),
         synchronize: toBool(getOsEnvOptional('TYPEORM_SYNCHRONIZE')),
-        logging: getOsEnv('TYPEORM_LOGGING'),
+        logging: getOsEnv('TYPEORM_LOGGING')
     },
     graphql: {
         enabled: toBool(getOsEnv('GRAPHQL_ENABLED')),
         route: getOsEnv('GRAPHQL_ROUTE'),
-        editor: toBool(getOsEnv('GRAPHQL_EDITOR')),
+        editor: toBool(getOsEnv('GRAPHQL_EDITOR'))
     },
     swagger: {
         enabled: toBool(getOsEnv('SWAGGER_ENABLED')),
         route: getOsEnv('SWAGGER_ROUTE'),
         file: getOsEnv('SWAGGER_FILE'),
         username: getOsEnv('SWAGGER_USERNAME'),
-        password: getOsEnv('SWAGGER_PASSWORD'),
+        password: getOsEnv('SWAGGER_PASSWORD')
     },
     monitor: {
         enabled: toBool(getOsEnv('MONITOR_ENABLED')),
         route: getOsEnv('MONITOR_ROUTE'),
         username: getOsEnv('MONITOR_USERNAME'),
-        password: getOsEnv('MONITOR_PASSWORD'),
+        password: getOsEnv('MONITOR_PASSWORD')
     },
+    jwt: {
+        jwt_secret: getOsEnv('JWT_SECRET')
+    }
 };

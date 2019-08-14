@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, ManyToOne, Column } from 'typeorm';
+import { Entity, ManyToOne, Column } from 'typeorm';
 // import { User } from '../types/User';
 import { User } from './User';
 import { Team } from './Team';
@@ -6,11 +6,11 @@ import { Permission } from './Permission';
 
 @Entity()
 export class UserTeam {
-    @PrimaryGeneratedColumn({ name: 'user_id' })
-    public userId: string;
+    // @PrimaryGeneratedColumn({ name: 'user_id' })
+    // public userId: string;
 
-    @PrimaryGeneratedColumn({ name: 'team_id' })
-    public teamId: string;
+    // @PrimaryGeneratedColumn({ name: 'team_id' })
+    // public teamId: string;
 
     @Column()
     public position: string;
