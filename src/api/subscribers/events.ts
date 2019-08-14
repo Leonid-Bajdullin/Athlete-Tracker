@@ -9,5 +9,8 @@ export const events = {
     },
     team: {
         created: 'onTeamCreate'
+    },
+    account: {
+        created: 'onAccountCreate'
     }
 };
