@@ -6,8 +6,8 @@ import {
     OnUndefined,
     Param,
     Post,
-    Req,
-    UseBefore
+    UseBefore,
+    Put
 } from 'routing-controllers';
 
 import { UserNotFoundError } from '../errors/UserNotFoundError';
@@ -23,14 +23,14 @@ export class UserController {
 
     @UseBefore(CheckAuthMiddleware)
     @Get()
-    public find(): Promise<User[]> {
-        return this.userService.find();
+    public findAll(): Promise<User[]> {
+        return this.userService.findAll();
     }
 
-    @Get('/me')
-    public findMe(@Req() req: any): Promise<User[]> {
-        return req.user;
-    }
+    // @Get('/me')
+    // public findMe(@Req() req: any): Promise<User[]> {
+    //     return req.user;
+    // }
 
     @Get('/:id')
     @OnUndefined(UserNotFoundError)
@@ -43,13 +43,13 @@ export class UserController {
         return this.userService.create(user);
     }
 
-    // @Put('/:id')
-    // public update(
-    //     @Param('id') id: string,
-    //     @Body() user: UserRequestDto
-    // ): Promise<User> {
-    //     return this.userService.update(id, user);
-    // }
+    @Put('/:id')
+    public update(
+        @Param('id') id: string,
+        @Body() user: UserRequestDto
+    ): Promise<User> {
+        return this.userService.update(id, user);
+    }
 
     @Delete('/:id')
     public delete(@Param('id') id: string): Promise<{}> {

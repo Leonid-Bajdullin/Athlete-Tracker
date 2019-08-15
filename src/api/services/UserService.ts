@@ -50,7 +50,7 @@ export class UserService {
         });
     }
 
-    public find(): Promise<User[]> {
+    public findAll(): Promise<User[]> {
         this.log.info('Find all users');
         return this.userRepository.find({
             relations: ['userTeams', 'accounts']
@@ -79,11 +79,12 @@ export class UserService {
         return returnedUser;
     }
 
-    // public update(id: string, user: UserRequestDto): Promise<User> {
-    //     this.log.info('Update a user');
-    //     user.id = id;
-    //     return this.userRepository.save(user);
-    // }
+    public async update(id: string, user: UserRequestDto): Promise<User> {
+        this.log.info('Update a user');
+        const updatedUser = Object.assign(await this.findOne(id), user);
+        console.log(updatedUser);
+        return updatedUser;
+    }
 
     public async delete(id: string): Promise<{}> {
         this.log.info('Delete a user');
@@ -101,16 +102,16 @@ export class UserService {
         });
         const account = user.accounts.find((item) => item.provider === 'login');
         this.log.info('account =>', account);
+        this.log.info(
+            'is compared password correct? => ',
+            this.comparePassword(account, loginData.password) //returns empty object, why?
+        );
         if (this.comparePassword(account, loginData.password)) {
             const token = jwt.sign({ id: account.id }, env.jwt.jwt_secret);
             return {
                 token: token
             };
         }
-        this.log.info(
-            'compared password correct => ',
-            this.comparePassword(account, loginData.password)
-        );
         return { message: 'Password incorrect' };
     }
 }
