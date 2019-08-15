@@ -1,48 +1,58 @@
 import {
-    Authorized, Body, Delete, Get, JsonController, OnUndefined, Param, Post, Put, Req
+    Body,
+    Delete,
+    Get,
+    JsonController,
+    OnUndefined,
+    Param,
+    Post,
+    UseBefore,
+    Put
 } from 'routing-controllers';
 
 import { UserNotFoundError } from '../errors/UserNotFoundError';
 import { User } from '../models/User';
 import { UserService } from '../services/UserService';
+import { UserRequestDto } from '../dto/UserRequestDto';
+import { CheckAuthMiddleware } from '../middlewares/CheckAuthMiddlware';
 
-@Authorized()
+// @Authorized()
 @JsonController('/users')
 export class UserController {
+    constructor(private userService: UserService) {}
 
-    constructor(
-        private userService: UserService
-    ) { }
-
+    @UseBefore(CheckAuthMiddleware)
     @Get()
-    public find(): Promise<User[]> {
-        return this.userService.find();
+    public findAll(): Promise<User[]> {
+        return this.userService.findAll();
     }
 
-    @Get('/me')
-    public findMe(@Req() req: any): Promise<User[]> {
-        return req.user;
-    }
+    // @Get('/me')
+    // public findMe(@Req() req: any): Promise<User[]> {
+    //     return req.user;
+    // }
 
     @Get('/:id')
     @OnUndefined(UserNotFoundError)
-    public one(@Param('id') id: string): Promise<User | undefined> {
+    public findOne(@Param('id') id: string): Promise<User | undefined> {
         return this.userService.findOne(id);
     }
 
     @Post()
-    public create(@Body() user: User): Promise<User> {
+    public create(@Body() user: UserRequestDto): Promise<User> {
         return this.userService.create(user);
     }
 
     @Put('/:id')
-    public update(@Param('id') id: string, @Body() user: User): Promise<User> {
+    public update(
+        @Param('id') id: string,
+        @Body() user: UserRequestDto
+    ): Promise<User> {
         return this.userService.update(id, user);
     }
 
     @Delete('/:id')
-    public delete(@Param('id') id: string): Promise<void> {
+    public delete(@Param('id') id: string): Promise<{}> {
         return this.userService.delete(id);
     }
-
 }

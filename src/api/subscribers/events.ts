@@ -5,9 +5,12 @@
  */
 export const events = {
     user: {
-        created: 'onUserCreate',
+        created: 'onUserCreate'
     },
-    pet: {
-        created: 'onPetCreate',
+    team: {
+        created: 'onTeamCreate'
     },
+    account: {
+        created: 'onAccountCreate'
+    }
 };
