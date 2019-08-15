@@ -23,7 +23,7 @@ export class User {
     @Column()
     public nickname: string;
 
-    @Column()
+    @Column({ unique: true })
     public email: string;
 
     @Column('jsonb')
