@@ -67,7 +67,13 @@ export class UserService {
     }
 
     public async create(user: UserRequestDto): Promise<User> {
-        const newUser = await this.userRepository.save(user);
+        let newUser = new User();
+        newUser.firstName = user.firstName;
+        newUser.lastName = user.lastName;
+        newUser.email = user.email;
+        newUser.nickname = '';
+
+        newUser = await this.userRepository.save(newUser);
         const returnedUser = await this.findOne(newUser.id);
 
         this.eventDispatcher.dispatch(events.user.created, returnedUser);
