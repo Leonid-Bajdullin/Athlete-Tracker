@@ -18,6 +18,7 @@ import { events } from '../subscribers/events';
 import { UserRequestDto } from '../dto/UserRequestDto';
 import { Account } from '../models/Account';
 import { LoginDto } from '../dto/LoginDto';
+// import { isBoolean } from 'util';
 
 @Service()
 export class UserService {
@@ -39,16 +40,16 @@ export class UserService {
         });
     }
 
-    public comparePassword(
-        account: Account,
-        password: string
-    ): Promise<boolean> {
-        return new Promise((resolve, reject) => {
-            bcrypt.compare(password, account.salt, (err, res) => {
-                resolve(res === true);
-            });
-        });
-    }
+    // public comparePassword(
+    //     account: Account,
+    //     password: string
+    // ): Promise<boolean> {
+    //     return new Promise((resolve, reject) => {
+    //         bcrypt.compare(password, account.salt, (err, res) => {
+    //             resolve(res === true);
+    //         });
+    //     });
+    // }
 
     public findAll(): Promise<User[]> {
         this.log.info('Find all users');
@@ -66,7 +67,13 @@ export class UserService {
     }
 
     public async create(user: UserRequestDto): Promise<User> {
-        const newUser = await this.userRepository.save(user);
+        let newUser = new User();
+        newUser.firstName = user.firstName;
+        newUser.lastName = user.lastName;
+        newUser.email = user.email;
+        newUser.nickname = '';
+
+        newUser = await this.userRepository.save(newUser);
         const returnedUser = await this.findOne(newUser.id);
 
         this.eventDispatcher.dispatch(events.user.created, returnedUser);
@@ -102,16 +109,24 @@ export class UserService {
         });
         const account = user.accounts.find((item) => item.provider === 'login');
         this.log.info('account =>', account);
-        this.log.info(
-            'is compared password correct? => ',
-            this.comparePassword(account, loginData.password) //returns empty object, why?
-        );
-        if (this.comparePassword(account, loginData.password)) {
+        // this.log.info(
+        //     'is compared password correct? => ',
+        //     this.comparePassword(account, loginData.password) //returns empty object, why?
+        // );
+        const isEqual = await bcrypt.compare(loginData.password, account.salt);
+        this.log.info('compare result => ', isEqual);
+        if (isEqual) {
             const token = jwt.sign({ id: account.id }, env.jwt.jwt_secret);
             return {
                 token: token
             };
         }
+        // if (this.comparePassword(account, loginData.password)) {
+        //     const token = jwt.sign({ id: account.id }, env.jwt.jwt_secret);
+        //     return {
+        //         token: token
+        //     };
+        // }
         return { message: 'Password incorrect' };
     }
 }
