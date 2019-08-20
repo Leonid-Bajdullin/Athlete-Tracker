@@ -53,7 +53,7 @@ export class UserService {
     public findAll(): Promise<User[]> {
         this.log.info('Find all users');
         return this.userRepository.find({
-            relations: ['userTeams', 'accounts']
+            relations: ['userTeams', 'userTeams.team', 'accounts']
         });
     }
 
@@ -83,7 +83,7 @@ export class UserService {
         this.log.info('Update a user');
         const updatedUser = Object.assign(await this.findOne(id), user);
         console.log(updatedUser);
-        return updatedUser;
+        return await this.userRepository.save(updatedUser);
     }
 
     public async delete(id: string): Promise<{}> {

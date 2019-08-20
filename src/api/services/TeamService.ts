@@ -1,6 +1,5 @@
 import { Service } from 'typedi';
 import { OrmRepository } from 'typeorm-typedi-extensions';
-// import uuid from 'uuid';
 
 import {
     EventDispatcher,
@@ -20,34 +19,41 @@ export class TeamService {
         @Logger(__filename) private log: LoggerInterface
     ) {}
 
-    public find(): Promise<Team[]> {
+    public findAll(): Promise<Team[]> {
         this.log.info('Find all teams');
-        return this.teamRepository.find({ relations: ['userTeams'] });
+        return this.teamRepository.find({
+            relations: ['userTeams', 'userTeams.user']
+        });
     }
 
     public findOne(id: string): Promise<Team | undefined> {
         this.log.info('Find one team');
-        return this.teamRepository.findOne({ id });
+        return this.teamRepository.findOne({
+            where: { id },
+            relations: ['userTeams']
+        });
     }
 
     public async create(team: TeamRequestDto): Promise<Team> {
         this.log.info('Create a new team => ', team);
-        // user.id = uuid.v1();
         const newTeam = await this.teamRepository.save(team);
+
         this.eventDispatcher.dispatch(events.team.created, newTeam);
+
         return newTeam;
     }
 
-    public update(id: string, team: TeamRequestDto): Promise<Team> {
-        this.log.info('Update a team');
-        team.id = id;
-        return this.teamRepository.save(team);
+    public async update(id: string, team: TeamRequestDto): Promise<Team> {
+        const updatedTeam = Object.assign(await this.findOne(id), team);
+        return await this.teamRepository.save(updatedTeam);
     }
 
-    public async delete(id: string): Promise<string> {
+    public async delete(id: string): Promise<{}> {
         this.log.info('Delete a team');
         await this.teamRepository.delete(id);
-        const deleteMessage = `Team with teamID=${id} deleted successfully!`;
+        const deleteMessage = {
+            message: `Team with TeamID=${id} deleted successfully!`
+        };
         return deleteMessage;
     }
 }

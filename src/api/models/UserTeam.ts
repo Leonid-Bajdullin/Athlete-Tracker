@@ -6,10 +6,10 @@ import { Permission } from './Permission';
 
 @Entity()
 export class UserTeam {
-    // @PrimaryGeneratedColumn({ name: 'user_id' })
+    // @PrimaryColumn({ name: 'user_id' })
     // public userId: string;
 
-    // @PrimaryGeneratedColumn({ name: 'team_id' })
+    // @PrimaryColumn({ name: 'team_id' })
     // public teamId: string;
 
     @Column()

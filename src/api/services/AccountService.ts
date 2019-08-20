@@ -14,11 +14,14 @@ export class AccountService {
 
     public find(): Promise<Account[]> {
         this.log.info('Find all accounts');
-        return this.accountRepository.find();
+        return this.accountRepository.find({ relations: ['user'] });
     }
 
     public findOne(id: string): Promise<Account | undefined> {
         this.log.info('Find one account');
-        return this.accountRepository.findOne({ id });
+        return this.accountRepository.findOne({
+            where: { id: id },
+            relations: ['user']
+        });
     }
 }

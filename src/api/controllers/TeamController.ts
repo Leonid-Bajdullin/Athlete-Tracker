@@ -21,7 +21,7 @@ export class TeamController {
 
     @Get()
     public find(): Promise<Team[]> {
-        return this.teamService.find();
+        return this.teamService.findAll();
     }
 
     @Get('/:id')
@@ -44,7 +44,7 @@ export class TeamController {
     }
 
     @Delete('/:id')
-    public delete(@Param('id') id: string): Promise<string> {
+    public delete(@Param('id') id: string): Promise<{}> {
         return this.teamService.delete(id);
     }
 }
