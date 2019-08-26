@@ -11,7 +11,7 @@ import {
 
 import { Team } from '../models/Team';
 import { TeamService } from '../services/TeamService';
-import { TeamRequestDto } from '../dto/TeamRequestDto';
+import { TeamRequestDto } from '../dto/team/TeamRequestDto';
 import { TeamNotFoundError } from '../errors/TeamNotFoundError';
 
 // @Authorized()

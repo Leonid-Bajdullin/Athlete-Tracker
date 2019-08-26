@@ -1,7 +1,7 @@
 import { JsonController, Body, Post, UseAfter } from 'routing-controllers';
 import { CheckAuthMiddleware } from '../middlewares/CheckAuthMiddlware';
 import { UserService } from '../services/UserService';
-import { LoginDto } from '../dto/LoginDto';
+import { LoginDto } from '../dto/user/LoginDto';
 
 @JsonController('/login')
 export class LoginController {

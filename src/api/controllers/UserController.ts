@@ -6,22 +6,23 @@ import {
     OnUndefined,
     Param,
     Post,
-    UseBefore,
+    // UseBefore,
     Put
 } from 'routing-controllers';
 
 import { UserNotFoundError } from '../errors/UserNotFoundError';
 import { User } from '../models/User';
 import { UserService } from '../services/UserService';
-import { UserRequestDto } from '../dto/UserRequestDto';
-import { CheckAuthMiddleware } from '../middlewares/CheckAuthMiddlware';
+import { UserCreateDto } from '../dto/user/UserCreateDto';
+import { UserSubmitChangesDto } from '../dto/user/UserSubmitChangesDto';
+// import { CheckAuthMiddleware } from '../middlewares/CheckAuthMiddlware';
 
 // @Authorized()
 @JsonController('/users')
 export class UserController {
     constructor(private userService: UserService) {}
 
-    @UseBefore(CheckAuthMiddleware)
+    // @UseBefore(CheckAuthMiddleware)
     @Get()
     public findAll(): Promise<User[]> {
         return this.userService.findAll();
@@ -39,14 +40,14 @@ export class UserController {
     }
 
     @Post()
-    public create(@Body() user: UserRequestDto): Promise<User> {
+    public create(@Body() user: UserCreateDto): Promise<User> {
         return this.userService.create(user);
     }
 
     @Put('/:id')
     public update(
         @Param('id') id: string,
-        @Body() user: UserRequestDto
+        @Body() user: UserSubmitChangesDto
     ): Promise<User> {
         return this.userService.update(id, user);
     }
