@@ -9,7 +9,7 @@ import { events } from '../subscribers/events';
 import { Team } from '../models/Team';
 import { Logger, LoggerInterface } from '../../decorators/Logger';
 import { TeamRepository } from '../repositories/TeamRepository';
-import { TeamRequestDto } from '../dto/TeamRequestDto';
+import { TeamRequestDto } from '../dto/team/TeamRequestDto';
 
 @Service()
 export class TeamService {

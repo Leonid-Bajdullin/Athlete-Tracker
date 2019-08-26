@@ -13,11 +13,13 @@ import {
 import { Logger, LoggerInterface } from '../../decorators/Logger';
 import { User } from '../models/User';
 import { UserRepository } from '../repositories/UserRepository';
+import { UserCreateDto } from '../dto/user/UserCreateDto';
+import { UserSubmitChangesDto } from '../dto/user/UserSubmitChangesDto';
+import { LoginDto } from '../dto/user/LoginDto';
+import { Account } from '../models/Account';
 import { AccountRepository } from '../repositories/AccountRepository';
 import { events } from '../subscribers/events';
-import { UserRequestDto } from '../dto/UserRequestDto';
-import { Account } from '../models/Account';
-import { LoginDto } from '../dto/LoginDto';
+
 // import { isBoolean } from 'util';
 
 @Service()
@@ -40,17 +42,6 @@ export class UserService {
         });
     }
 
-    // public comparePassword(
-    //     account: Account,
-    //     password: string
-    // ): Promise<boolean> {
-    //     return new Promise((resolve, reject) => {
-    //         bcrypt.compare(password, account.salt, (err, res) => {
-    //             resolve(res === true);
-    //         });
-    //     });
-    // }
-
     public findAll(): Promise<User[]> {
         this.log.info('Find all users');
         return this.userRepository.find({
@@ -66,7 +57,7 @@ export class UserService {
         });
     }
 
-    public async create(user: UserRequestDto): Promise<User> {
+    public async create(user: UserCreateDto): Promise<User> {
         let newUser = new User();
         newUser.firstName = user.firstName;
         newUser.lastName = user.lastName;
@@ -86,7 +77,7 @@ export class UserService {
         return returnedUser;
     }
 
-    public async update(id: string, user: UserRequestDto): Promise<User> {
+    public async update(id: string, user: UserSubmitChangesDto): Promise<User> {
         this.log.info('Update a user');
         const updatedUser = Object.assign(await this.findOne(id), user);
         console.log(updatedUser);
@@ -118,7 +109,8 @@ export class UserService {
         if (isEqual) {
             const token = jwt.sign({ id: account.id }, env.jwt.jwt_secret);
             return {
-                token: token
+                token: token,
+                user: user
             };
         }
         // if (this.comparePassword(account, loginData.password)) {
