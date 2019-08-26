@@ -20,19 +20,19 @@ export class User {
     @Column({ name: 'last_name' })
     public lastName: string;
 
-    @Column()
+    @Column({ nullable: true })
     public nickname: string;
 
     @Column({ unique: true })
     public email: string;
 
-    @Column('jsonb')
+    @Column('jsonb', { nullable: true })
     public data: JSON;
 
-    @Column()
+    @Column({ nullable: true })
     public phone: string;
 
-    @Column({ name: 'photo_url' })
+    @Column({ name: 'photo_url', nullable: true })
     public photoUrl: string;
 
     // Relations
