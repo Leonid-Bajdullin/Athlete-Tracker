@@ -10,6 +10,9 @@ export class Team {
     @Column()
     public name: string;
 
+    @Column({ nullable: true })
+    public photoUrl: string;
+
     @OneToMany((type) => UserTeam, (userTeam) => userTeam.team)
     public userTeams: UserTeam[];
 }
