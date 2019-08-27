@@ -10,6 +10,9 @@ export class Team {
     @Column()
     public name: string;
 
+    @Column()
+    public description: string;
+
     @Column({ nullable: true })
     public photoUrl: string;
 
