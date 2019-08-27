@@ -100,10 +100,7 @@ export class UserService {
         });
         const account = user.accounts.find((item) => item.provider === 'login');
         this.log.info('account =>', account);
-        // this.log.info(
-        //     'is compared password correct? => ',
-        //     this.comparePassword(account, loginData.password) //returns empty object, why?
-        // );
+
         const isEqual = await bcrypt.compare(loginData.password, account.salt);
         this.log.info('compare result => ', isEqual);
         if (isEqual) {
@@ -113,12 +110,7 @@ export class UserService {
                 user: user
             };
         }
-        // if (this.comparePassword(account, loginData.password)) {
-        //     const token = jwt.sign({ id: account.id }, env.jwt.jwt_secret);
-        //     return {
-        //         token: token
-        //     };
-        // }
+
         return { message: 'Password incorrect' };
     }
 }

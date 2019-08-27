@@ -34,6 +34,14 @@ export class TeamService {
         });
     }
 
+    public async findMembers(id: string): Promise<Array<any>> {
+        const team = await this.teamRepository.findOne({
+            where: { id },
+            relations: ['userTeams', 'userTeams.user']
+        });
+        return team.userTeams;
+    }
+
     public async create(team: TeamRequestDto): Promise<Team> {
         this.log.info('Create a new team => ', team);
         const newTeam = await this.teamRepository.save(team);

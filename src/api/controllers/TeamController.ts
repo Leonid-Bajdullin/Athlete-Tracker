@@ -30,6 +30,11 @@ export class TeamController {
         return this.teamService.findOne(id);
     }
 
+    @Get('/members/:id')
+    public findMembers(@Param('id') id: string): Promise<Array<any>> {
+        return this.teamService.findMembers(id);
+    }
+
     @Post()
     public create(@Body() team: TeamRequestDto): Promise<Team> {
         return this.teamService.create(team);
