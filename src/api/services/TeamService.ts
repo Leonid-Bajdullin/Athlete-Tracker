@@ -29,8 +29,7 @@ export class TeamService {
     public findOne(id: string): Promise<Team | undefined> {
         this.log.info('Find one team');
         return this.teamRepository.findOne({
-            where: { id },
-            relations: ['userTeams']
+            where: { id }
         });
     }
 
