@@ -79,8 +79,15 @@ export class UserService {
 
     public async update(id: string, user: UserSubmitChangesDto): Promise<User> {
         this.log.info('Update a user');
-        const updatedUser = Object.assign(await this.findOne(id), user);
-        console.log(updatedUser);
+        const updatedUser = Object.assign(
+            await this.userRepository.findOne(id),
+            user
+        );
+        this.log.info('updated user => ', updatedUser);
+        this.log.info(
+            'new saved user => ',
+            await this.userRepository.save(updatedUser)
+        );
         return await this.userRepository.save(updatedUser);
     }
 
