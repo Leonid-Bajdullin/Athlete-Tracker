@@ -53,7 +53,18 @@ export class UserService {
         this.log.info('Find one user');
         return this.userRepository.findOne({
             where: { id: id },
-            relations: ['userTeams', 'accounts']
+            relations: ['userTeams', 'userTeams.team', 'accounts']
+        });
+    }
+
+    public async findUserTeamsId(id: string): Promise<Array<any>> {
+        const user = await this.userRepository.findOne({
+            where: { id },
+            relations: ['userTeams', 'userTeams.team']
+        });
+        this.log.info('', user.userTeams);
+        return user.userTeams.map((item) => {
+            return item.team.id;
         });
     }
 
@@ -79,15 +90,19 @@ export class UserService {
 
     public async update(id: string, user: UserSubmitChangesDto): Promise<User> {
         this.log.info('Update a user');
+        let { password, ...rest } = user;
         const updatedUser = Object.assign(
             await this.userRepository.findOne(id),
-            user
+            rest
         );
-        this.log.info('updated user => ', updatedUser);
-        this.log.info(
-            'new saved user => ',
-            await this.userRepository.save(updatedUser)
-        );
+        if (user.password) {
+            const newPassword = await this.hashPassword(user.password);
+            const account = (await this.findOne(id)).accounts.find((item) => {
+                return item.provider === 'login';
+            });
+            account.salt = newPassword;
+            this.accountRepository.save(account);
+        }
         return await this.userRepository.save(updatedUser);
     }
 
@@ -106,7 +121,7 @@ export class UserService {
             relations: ['accounts']
         });
         const account = user.accounts.find((item) => item.provider === 'login');
-        this.log.info('account =>', account);
+        this.log.info('user =>', user);
 
         const isEqual = await bcrypt.compare(loginData.password, account.salt);
         this.log.info('compare result => ', isEqual);
