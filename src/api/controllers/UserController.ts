@@ -39,6 +39,11 @@ export class UserController {
         return this.userService.findOne(id);
     }
 
+    @Get('/teams/:id')
+    public async findUserTeamsId(@Param('id') id: string): Promise<Array<any>> {
+        return this.userService.findUserTeamsId(id);
+    }
+
     @Post()
     public create(@Body() user: UserCreateDto): Promise<User> {
         return this.userService.create(user);
