@@ -40,8 +40,8 @@ export class UserController {
     }
 
     @Get('/teams/:id')
-    public async findUserTeamsId(@Param('id') id: string): Promise<Array<any>> {
-        return this.userService.findUserTeamsId(id);
+    public async findUserTeams(@Param('id') id: string): Promise<Array<any>> {
+        return this.userService.findUserTeams(id);
     }
 
     @Post()

@@ -2,8 +2,6 @@ import { Service } from 'typedi';
 import { OrmRepository } from 'typeorm-typedi-extensions';
 import * as bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-// import passport from 'passport';
-// import uuid from 'uuid';
 
 import { env } from '../../env';
 import {
@@ -19,8 +17,6 @@ import { LoginDto } from '../dto/user/LoginDto';
 import { Account } from '../models/Account';
 import { AccountRepository } from '../repositories/AccountRepository';
 import { events } from '../subscribers/events';
-
-// import { isBoolean } from 'util';
 
 @Service()
 export class UserService {
@@ -57,14 +53,20 @@ export class UserService {
         });
     }
 
-    public async findUserTeamsId(id: string): Promise<Array<any>> {
+    public async findUserTeams(id: string): Promise<Array<any>> {
         const user = await this.userRepository.findOne({
             where: { id },
             relations: ['userTeams', 'userTeams.team']
         });
         this.log.info('', user.userTeams);
+        if (user.userTeams === []) {
+            return [];
+        }
         return user.userTeams.map((item) => {
-            return item.team.id;
+            return {
+                id: item.team.id,
+                position: item.position
+            };
         });
     }
 
