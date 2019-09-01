@@ -117,7 +117,7 @@ export class UserService {
         return deleteMessage;
     }
 
-    public async login(loginData: LoginDto): Promise<{}> {
+    public async login(loginData: LoginDto): Promise<any> {
         const user = await this.userRepository.findOne({
             where: { email: loginData.email },
             relations: ['accounts']
@@ -135,6 +135,6 @@ export class UserService {
             };
         }
 
-        return { message: 'Password incorrect' };
+        return undefined;
     }
 }
