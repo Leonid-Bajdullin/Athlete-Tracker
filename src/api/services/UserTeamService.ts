@@ -32,4 +32,27 @@ export class UserTeamService {
         );
         return this.userTeamRepository.save(newMember);
     };
+
+    public acceptMember = async (
+        values: TeamJoinRequestDto
+    ): Promise<UserTeam> => {
+        const member = await this.userTeamRepository.findOne({
+            where: { user: values.userId, team: values.teamId },
+            relations: ['user', 'team']
+        });
+        member.position = 'athlete';
+        this.log.info('member => ', member);
+        return await this.userTeamRepository.save(member);
+    };
+
+    public declineMember = async (values: TeamJoinRequestDto): Promise<{}> => {
+        const member = await this.userTeamRepository.findOne({
+            where: { user: values.userId, team: values.teamId }
+        });
+        await this.userTeamRepository.delete(member);
+        const deleteMessage = {
+            message: `User with id: ${values.userId} successfully declined from team id: ${values.teamId}!`
+        };
+        return deleteMessage;
+    };
 }
