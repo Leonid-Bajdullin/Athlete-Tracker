@@ -35,6 +35,11 @@ export class TeamController {
         return this.teamService.findMembers(id);
     }
 
+    @Get('/pendingmembers/:id')
+    public findPendingMembers(@Param('id') id: string): Promise<Array<any>> {
+        return this.teamService.findPendingMembers(id);
+    }
+
     @Post()
     public create(@Body() team: TeamRequestDto): Promise<Team> {
         return this.teamService.create(team);

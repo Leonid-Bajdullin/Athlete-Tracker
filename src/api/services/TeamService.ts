@@ -1,5 +1,6 @@
 import { Service } from 'typedi';
 import { OrmRepository } from 'typeorm-typedi-extensions';
+import _ from 'lodash';
 
 import {
     EventDispatcher,
@@ -38,7 +39,23 @@ export class TeamService {
             where: { id },
             relations: ['userTeams', 'userTeams.user']
         });
-        return team.userTeams;
+
+        const filteredMembers = _.filter(team.userTeams, (item) => {
+            return item.position !== 'pending';
+        });
+        return filteredMembers;
+    }
+
+    public async findPendingMembers(id: string): Promise<Array<any>> {
+        const team = await this.teamRepository.findOne({
+            where: { id },
+            relations: ['userTeams', 'userTeams.user']
+        });
+
+        const pendingMembers = _.filter(team.userTeams, (item) => {
+            return item.position === 'pending';
+        });
+        return pendingMembers;
     }
 
     public async create(team: TeamRequestDto): Promise<Team> {
