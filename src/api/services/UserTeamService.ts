@@ -7,6 +7,7 @@ import { UserTeam } from '../models/UserTeam';
 import { UserRepository } from '../repositories/UserRepository';
 import { TeamRepository } from '../repositories/TeamRepository';
 import { TeamJoinRequestDto } from '../dto/team/TeamJoinRequestDto';
+import { FindConditions } from 'typeorm';
 
 @Service()
 export class UserTeamService {
@@ -46,10 +47,10 @@ export class UserTeamService {
     };
 
     public declineMember = async (values: TeamJoinRequestDto): Promise<{}> => {
-        const member = await this.userTeamRepository.findOne({
-            where: { user: values.userId, team: values.teamId }
-        });
-        await this.userTeamRepository.delete(member);
+        await this.userTeamRepository.delete({
+            user: values.userId,
+            team: values.teamId
+        } as FindConditions<UserTeam>);
         const deleteMessage = {
             message: `User with id: ${values.userId} successfully declined from team id: ${values.teamId}!`
         };
