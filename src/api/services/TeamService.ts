@@ -10,12 +10,17 @@ import { events } from '../subscribers/events';
 import { Team } from '../models/Team';
 import { Logger, LoggerInterface } from '../../decorators/Logger';
 import { TeamRepository } from '../repositories/TeamRepository';
-import { TeamRequestDto } from '../dto/team/TeamRequestDto';
+import { TeamCreateDto } from '../dto/team/TeamCreateDto';
+import { UserTeamRepository } from '../repositories/UserTeamRepository';
+import { UserRepository } from '../repositories/UserRepository';
+import { UserTeam } from '../models/UserTeam';
 
 @Service()
 export class TeamService {
     constructor(
         @OrmRepository() private teamRepository: TeamRepository,
+        @OrmRepository() private userRepository: UserRepository,
+        @OrmRepository() private userTeamRepository: UserTeamRepository,
         @EventDispatcher() private eventDispatcher: EventDispatcherInterface,
         @Logger(__filename) private log: LoggerInterface
     ) {}
@@ -58,16 +63,31 @@ export class TeamService {
         return pendingMembers;
     }
 
-    public async create(team: TeamRequestDto): Promise<Team> {
-        this.log.info('Create a new team => ', team);
-        const newTeam = await this.teamRepository.save(team);
+    public async create(data: TeamCreateDto): Promise<Team> {
+        const { userId, name, description, photoUrl } = data;
+        const newTeam = new Team();
+        newTeam.name = name;
+        newTeam.description = description;
+        newTeam.photoUrl = photoUrl;
+        const createdTeam = await this.teamRepository.save(newTeam);
 
+        const user = await this.userRepository.findOne(userId);
+        const userTeam = new UserTeam();
+        userTeam.user = user;
+        userTeam.team = newTeam;
+        userTeam.position = 'headcoach';
+        await this.userTeamRepository.save(userTeam);
+        this.log.info('user => ', await this.userRepository.findOne(userId));
+        this.log.info('team => ', createdTeam);
+        this.log.info(
+            'userTeam => ',
+            await this.userTeamRepository.save(userTeam)
+        );
         this.eventDispatcher.dispatch(events.team.created, newTeam);
-
-        return newTeam;
+        return createdTeam;
     }
 
-    public async update(id: string, team: TeamRequestDto): Promise<Team> {
+    public async update(id: string, team: TeamCreateDto): Promise<Team> {
         const updatedTeam = Object.assign(await this.findOne(id), team);
         return await this.teamRepository.save(updatedTeam);
     }
