@@ -10,7 +10,7 @@ export class Team {
     @Column()
     public name: string;
 
-    @Column()
+    @Column({ nullable: true })
     public description: string;
 
     @Column({ nullable: true })
