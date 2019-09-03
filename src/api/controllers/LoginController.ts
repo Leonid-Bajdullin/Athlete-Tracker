@@ -1,4 +1,11 @@
-import { JsonController, Body, Post, OnUndefined } from 'routing-controllers';
+import { Response } from 'express';
+import {
+    JsonController,
+    Body,
+    Post,
+    OnUndefined,
+    Res
+} from 'routing-controllers';
 // import { CheckAuthMiddleware } from '../middlewares/CheckAuthMiddlware';
 import { UserService } from '../services/UserService';
 import { LoginDto } from '../dto/user/LoginDto';
@@ -11,7 +18,13 @@ export class LoginController {
     // @UseAfter(CheckAuthMiddleware)
     @OnUndefined(UserNotFoundError)
     @Post()
-    public login(@Body() loginData: LoginDto): Promise<{}> {
-        return this.userService.login(loginData);
+    public async login(
+        @Body() loginData: LoginDto,
+        @Res() response: Response
+    ): Promise<any> {
+        await this.userService.login(loginData);
+        response
+            .cookie('token', '1', { httpOnly: true })
+            .send({ message: 'response message' });
     }
 }
