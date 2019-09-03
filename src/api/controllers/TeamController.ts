@@ -11,7 +11,7 @@ import {
 
 import { Team } from '../models/Team';
 import { TeamService } from '../services/TeamService';
-import { TeamRequestDto } from '../dto/team/TeamRequestDto';
+import { TeamCreateDto } from '../dto/team/TeamCreateDto';
 import { TeamNotFoundError } from '../errors/TeamNotFoundError';
 
 // @Authorized()
@@ -41,14 +41,14 @@ export class TeamController {
     }
 
     @Post()
-    public create(@Body() team: TeamRequestDto): Promise<Team> {
-        return this.teamService.create(team);
+    public create(@Body() data: TeamCreateDto): Promise<Team> {
+        return this.teamService.create(data);
     }
 
     @Put('/:id')
     public update(
         @Param('id') id: string,
-        @Body() team: TeamRequestDto
+        @Body() team: TeamCreateDto
     ): Promise<Team> {
         return this.teamService.update(id, team);
     }
