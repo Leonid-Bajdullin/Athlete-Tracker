@@ -22,9 +22,12 @@ export class LoginController {
         @Body() loginData: LoginDto,
         @Res() response: Response
     ): Promise<any> {
-        await this.userService.login(loginData);
-        response
-            .cookie('token', '1', { httpOnly: true })
-            .send({ message: 'response message' });
+        return await this.userService.login(loginData);
     }
 }
+
+// response.setHeader('Alt-Svc', 'http://localhost:3000');
+//         response.setHeader('Set-Cookie', 'token=1; HttpOnly');
+//         return response
+//             .cookie('token', '1')
+//             .send({ message: 'response message' });
