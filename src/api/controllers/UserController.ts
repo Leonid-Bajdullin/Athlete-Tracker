@@ -7,7 +7,8 @@ import {
     Param,
     Post,
     // UseBefore,
-    Put
+    Put,
+    HeaderParam
 } from 'routing-controllers';
 
 import { UserNotFoundError } from '../errors/UserNotFoundError';
@@ -28,10 +29,12 @@ export class UserController {
         return this.userService.findAll();
     }
 
-    // @Get('/me')
-    // public findMe(@Req() req: any): Promise<User[]> {
-    //     return req.user;
-    // }
+    @Get('/currentuser')
+    public getCurrentUser(
+        @HeaderParam('authorization') token: string
+    ): Promise<User> {
+        return this.userService.getCurrentUser(token);
+    }
 
     @Get('/:id')
     @OnUndefined(UserNotFoundError)
@@ -39,7 +42,7 @@ export class UserController {
         return this.userService.findOne(id);
     }
 
-    @Get('/teams/:id')
+    @Get('/:id/teams')
     public async findUserTeams(@Param('id') id: string): Promise<Array<any>> {
         return this.userService.findUserTeams(id);
     }

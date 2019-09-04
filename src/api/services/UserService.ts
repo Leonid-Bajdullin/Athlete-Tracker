@@ -56,18 +56,24 @@ export class UserService {
     public async findUserTeams(id: string): Promise<Array<any>> {
         const user = await this.userRepository.findOne({
             where: { id },
-            relations: ['userTeams', 'userTeams.team']
+            relations: ['userTeams']
         });
         this.log.info('', user.userTeams);
-        if (user.userTeams === []) {
+
+        if (user.userTeams.length < 1) {
             return [];
+        } else {
+            const userWithTeams = await this.userRepository.findOne({
+                where: { id },
+                relations: ['userTeams', 'userTeams.team']
+            });
+            return userWithTeams.userTeams.map((item) => {
+                return {
+                    id: item.team.id,
+                    position: item.position
+                };
+            });
         }
-        return user.userTeams.map((item) => {
-            return {
-                id: item.team.id,
-                position: item.position
-            };
-        });
     }
 
     public async create(user: UserCreateDto): Promise<User> {
@@ -137,4 +143,23 @@ export class UserService {
 
         return undefined;
     }
+
+    public async getCurrentUser(token: string): Promise<User> {
+        if (!token) {
+            return null;
+        } else {
+            const realToken = token.split(' ')[1];
+            this.log.info('token => ', realToken);
+            const data: any = jwt.verify(realToken, env.jwt.jwt_secret);
+            const account = await this.accountRepository.findOne({
+                where: { id: data.id },
+                relations: ['user']
+            });
+            const user = account.user;
+            this.log.info('found user => ', user);
+            return user;
+        }
+    }
+
+    // (err, decoded) => { this.accountRepository.find({where: {id:decoded.id}})}
 }
