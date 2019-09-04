@@ -30,12 +30,12 @@ export class TeamController {
         return this.teamService.findOne(id);
     }
 
-    @Get('/members/:id')
+    @Get('/:id/members')
     public findMembers(@Param('id') id: string): Promise<Array<any>> {
         return this.teamService.findMembers(id);
     }
 
-    @Get('/pendingmembers/:id')
+    @Get('/:id/pendingmembers')
     public findPendingMembers(@Param('id') id: string): Promise<Array<any>> {
         return this.teamService.findPendingMembers(id);
     }
