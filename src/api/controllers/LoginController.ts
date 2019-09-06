@@ -25,9 +25,3 @@ export class LoginController {
         return await this.userService.login(loginData);
     }
 }
-
-// response.setHeader('Alt-Svc', 'http://localhost:3000');
-//         response.setHeader('Set-Cookie', 'token=1; HttpOnly');
-//         return response
-//             .cookie('token', '1')
-//             .send({ message: 'response message' });
