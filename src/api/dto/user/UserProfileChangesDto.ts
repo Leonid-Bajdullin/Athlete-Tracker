@@ -1,4 +1,4 @@
-export class UserSubmitChangesDto {
+export class UserProfileChangesDto {
     public firstName: string;
     public lastName: string;
     public email: string;

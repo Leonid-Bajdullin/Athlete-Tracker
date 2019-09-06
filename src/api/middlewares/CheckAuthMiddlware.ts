@@ -50,7 +50,10 @@ export class CheckAuthMiddleware implements ExpressMiddlewareInterface {
                     message: err.message
                 });
             } else if (!user) {
-                res.status(401).json({ err: 'User not authorized' });
+                res.status(401).json({
+                    message:
+                        'User not authorized. You need to log in to access this route!'
+                });
             } else {
                 req.body = user;
                 next();

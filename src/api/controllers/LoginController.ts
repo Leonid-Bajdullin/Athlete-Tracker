@@ -6,7 +6,6 @@ import {
     OnUndefined,
     Res
 } from 'routing-controllers';
-// import { CheckAuthMiddleware } from '../middlewares/CheckAuthMiddlware';
 import { UserService } from '../services/UserService';
 import { LoginDto } from '../dto/user/LoginDto';
 import { UserNotFoundError } from '../errors/UserNotFoundError';
@@ -15,7 +14,6 @@ import { UserNotFoundError } from '../errors/UserNotFoundError';
 export class LoginController {
     constructor(private userService: UserService) {}
 
-    // @UseAfter(CheckAuthMiddleware)
     @OnUndefined(UserNotFoundError)
     @Post()
     public async login(

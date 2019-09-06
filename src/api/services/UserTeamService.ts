@@ -1,5 +1,6 @@
 import { Service } from 'typedi';
 import { OrmRepository } from 'typeorm-typedi-extensions';
+import { FindConditions } from 'typeorm';
 import { Logger, LoggerInterface } from '../../decorators/Logger';
 
 import { UserTeamRepository } from '../repositories/UserTeamRepository';
@@ -7,17 +8,17 @@ import { UserTeam } from '../models/UserTeam';
 import { UserRepository } from '../repositories/UserRepository';
 import { TeamRepository } from '../repositories/TeamRepository';
 import { TeamMemberDto } from '../dto/team/TeamMemberDto';
-import { FindConditions } from 'typeorm';
 
 @Service()
 export class UserTeamService {
     constructor(
+        @Logger(__filename) private log: LoggerInterface,
         @OrmRepository() private userTeamRepository: UserTeamRepository,
         @OrmRepository() private userRepository: UserRepository,
-        @OrmRepository() private teamRepository: TeamRepository,
-        @Logger(__filename) private log: LoggerInterface
+        @OrmRepository() private teamRepository: TeamRepository
     ) {}
 
+    // POST METHODS
     public insertPendingMember = async (
         values: TeamMemberDto
     ): Promise<UserTeam> => {
@@ -25,26 +26,34 @@ export class UserTeamService {
         newMember.user = await this.userRepository.findOne(values.userId);
         newMember.team = await this.teamRepository.findOne(values.teamId);
         newMember.position = 'pending';
-        this.log.info('userId => ', values.userId);
-        this.log.info('teamId => ', values.teamId);
-        this.log.info(
-            'user => ',
-            await this.userRepository.findOne(values.userId)
-        );
+
         return this.userTeamRepository.save(newMember);
     };
 
+    // PUT METHODS
     public acceptMember = async (values: TeamMemberDto): Promise<UserTeam> => {
         const member = await this.userTeamRepository.findOne({
             where: { user: values.userId, team: values.teamId },
             relations: ['user', 'team']
         });
         member.position = 'athlete';
-        this.log.info('member => ', member);
         return await this.userTeamRepository.save(member);
     };
 
-    public deleteMember = async (values: TeamMemberDto): Promise<{}> => {
+    public async setMembersPosition(data: any) {
+        this.log.info('data =>', data);
+
+        const member = await this.userTeamRepository.findOne({
+            where: { user: data.userId, team: data.teamId },
+            relations: ['user', 'team']
+        });
+        member.position = data.position;
+
+        return await this.userTeamRepository.save(member);
+    }
+
+    // DELETE METHODS
+    public deleteMember = async (values: TeamMemberDto): Promise<object> => {
         await this.userTeamRepository.delete({
             user: values.userId,
             team: values.teamId

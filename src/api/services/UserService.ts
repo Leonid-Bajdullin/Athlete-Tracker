@@ -4,27 +4,22 @@ import * as bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
 import { env } from '../../env';
-import {
-    EventDispatcher,
-    EventDispatcherInterface
-} from '../../decorators/EventDispatcher';
 import { Logger, LoggerInterface } from '../../decorators/Logger';
 import { User } from '../models/User';
 import { UserRepository } from '../repositories/UserRepository';
 import { UserCreateDto } from '../dto/user/UserCreateDto';
-import { UserSubmitChangesDto } from '../dto/user/UserSubmitChangesDto';
+import { UserProfileChangesDto } from '../dto/user/UserProfileChangesDto';
 import { LoginDto } from '../dto/user/LoginDto';
 import { Account } from '../models/Account';
 import { AccountRepository } from '../repositories/AccountRepository';
-import { events } from '../subscribers/events';
+import { TeamIdPositionDto } from '../dto/team/TeamIdPositionDto';
 
 @Service()
 export class UserService {
     constructor(
+        @Logger(__filename) private log: LoggerInterface,
         @OrmRepository() private userRepository: UserRepository,
-        @OrmRepository() private accountRepository: AccountRepository,
-        @EventDispatcher() private eventDispatcher: EventDispatcherInterface,
-        @Logger(__filename) private log: LoggerInterface
+        @OrmRepository() private accountRepository: AccountRepository
     ) {}
 
     public hashPassword(password: string): Promise<string> {
@@ -38,27 +33,43 @@ export class UserService {
         });
     }
 
+    // GET METHODS
+    // not used yet
     public findAll(): Promise<User[]> {
-        this.log.info('Find all users');
         return this.userRepository.find({
             relations: ['userTeams', 'userTeams.team', 'accounts']
         });
     }
 
+    // not used yet
     public findOne(id: string): Promise<User | undefined> {
-        this.log.info('Find one user');
         return this.userRepository.findOne({
             where: { id: id },
             relations: ['userTeams', 'userTeams.team', 'accounts']
         });
     }
 
-    public async findUserTeams(id: string): Promise<Array<any>> {
+    public async getCurrentUser(token: string): Promise<User> {
+        this.log.info('token ', token);
+        if (!token) {
+            return null;
+        } else {
+            const realToken = token.split(' ')[1];
+            const data: any = jwt.verify(realToken, env.jwt.jwt_secret);
+            const account = await this.accountRepository.findOne({
+                where: { id: data.id },
+                relations: ['user']
+            });
+            const user = account.user;
+            return user;
+        }
+    }
+
+    public async findUserTeams(id: string): Promise<Array<TeamIdPositionDto>> {
         const user = await this.userRepository.findOne({
             where: { id },
             relations: ['userTeams']
         });
-        this.log.info('', user.userTeams);
 
         if (user.userTeams.length < 1) {
             return [];
@@ -76,28 +87,46 @@ export class UserService {
         }
     }
 
+    // POST METHODS
     public async create(user: UserCreateDto): Promise<User> {
         let newUser = new User();
         newUser.firstName = user.firstName;
         newUser.lastName = user.lastName;
         newUser.email = user.email;
-        newUser.nickname = '';
-
         newUser = await this.userRepository.save(newUser);
-        const returnedUser = await this.findOne(newUser.id);
-
-        this.eventDispatcher.dispatch(events.user.created, returnedUser);
 
         const account = new Account();
         account.salt = await this.hashPassword(user.password);
-        account.user = returnedUser;
+        account.user = newUser;
         account.provider = 'login';
         await this.accountRepository.save(account);
-        return returnedUser;
+
+        return newUser;
     }
 
-    public async update(id: string, user: UserSubmitChangesDto): Promise<User> {
-        this.log.info('Update a user');
+    public async login(loginData: LoginDto): Promise<any> {
+        const user = await this.userRepository.findOne({
+            where: { email: loginData.email },
+            relations: ['accounts']
+        });
+
+        const account = user.accounts.find((item) => item.provider === 'login');
+        if (await bcrypt.compare(loginData.password, account.salt)) {
+            const token = jwt.sign({ id: account.id }, env.jwt.jwt_secret);
+            return {
+                token: token,
+                user: user
+            };
+        }
+
+        return undefined;
+    }
+
+    // PUT METHODS
+    public async update(
+        id: string,
+        user: UserProfileChangesDto
+    ): Promise<User> {
         let { password, ...rest } = user;
         const updatedUser = Object.assign(
             await this.userRepository.findOne(id),
@@ -114,50 +143,12 @@ export class UserService {
         return await this.userRepository.save(updatedUser);
     }
 
-    public async delete(id: string): Promise<{}> {
-        this.log.info('Delete a user');
+    // DELETE METHODS
+    public async delete(id: string): Promise<object> {
         await this.userRepository.delete(id);
         const deleteMessage = {
             message: `User with userID=${id} deleted successfully!`
         };
         return deleteMessage;
-    }
-
-    public async login(loginData: LoginDto): Promise<any> {
-        const user = await this.userRepository.findOne({
-            where: { email: loginData.email },
-            relations: ['accounts']
-        });
-        const account = user.accounts.find((item) => item.provider === 'login');
-        this.log.info('user =>', user);
-
-        const isEqual = await bcrypt.compare(loginData.password, account.salt);
-        this.log.info('compare result => ', isEqual);
-        if (isEqual) {
-            const token = jwt.sign({ id: account.id }, env.jwt.jwt_secret);
-            return {
-                token: token,
-                user: user
-            };
-        }
-
-        return undefined;
-    }
-
-    public async getCurrentUser(token: string): Promise<User> {
-        if (!token) {
-            return null;
-        } else {
-            const realToken = token.split(' ')[1];
-            this.log.info('token => ', realToken);
-            const data: any = jwt.verify(realToken, env.jwt.jwt_secret);
-            const account = await this.accountRepository.findOne({
-                where: { id: data.id },
-                relations: ['user']
-            });
-            const user = account.user;
-            this.log.info('found user => ', user);
-            return user;
-        }
     }
 }
