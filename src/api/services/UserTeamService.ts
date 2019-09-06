@@ -6,7 +6,7 @@ import { UserTeamRepository } from '../repositories/UserTeamRepository';
 import { UserTeam } from '../models/UserTeam';
 import { UserRepository } from '../repositories/UserRepository';
 import { TeamRepository } from '../repositories/TeamRepository';
-import { TeamJoinRequestDto } from '../dto/team/TeamJoinRequestDto';
+import { TeamMemberDto } from '../dto/team/TeamMemberDto';
 import { FindConditions } from 'typeorm';
 
 @Service()
@@ -19,7 +19,7 @@ export class UserTeamService {
     ) {}
 
     public insertPendingMember = async (
-        values: TeamJoinRequestDto
+        values: TeamMemberDto
     ): Promise<UserTeam> => {
         const newMember = new UserTeam();
         newMember.user = await this.userRepository.findOne(values.userId);
@@ -34,9 +34,7 @@ export class UserTeamService {
         return this.userTeamRepository.save(newMember);
     };
 
-    public acceptMember = async (
-        values: TeamJoinRequestDto
-    ): Promise<UserTeam> => {
+    public acceptMember = async (values: TeamMemberDto): Promise<UserTeam> => {
         const member = await this.userTeamRepository.findOne({
             where: { user: values.userId, team: values.teamId },
             relations: ['user', 'team']
@@ -46,13 +44,13 @@ export class UserTeamService {
         return await this.userTeamRepository.save(member);
     };
 
-    public declineMember = async (values: TeamJoinRequestDto): Promise<{}> => {
+    public deleteMember = async (values: TeamMemberDto): Promise<{}> => {
         await this.userTeamRepository.delete({
             user: values.userId,
             team: values.teamId
         } as FindConditions<UserTeam>);
         const deleteMessage = {
-            message: `User with id: ${values.userId} successfully declined from team id: ${values.teamId}!`
+            message: `Successful`
         };
         return deleteMessage;
     };

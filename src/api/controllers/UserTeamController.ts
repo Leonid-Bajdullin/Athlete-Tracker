@@ -2,7 +2,7 @@ import { JsonController, Post, Body, Put, Delete } from 'routing-controllers';
 
 import { UserTeamService } from '../services/UserTeamService';
 import { UserTeam } from '../models/UserTeam';
-import { TeamJoinRequestDto } from '../dto/team/TeamJoinRequestDto';
+import { TeamMemberDto } from '../dto/team/TeamMemberDto';
 
 // @Authorized()
 @JsonController('/userteams')
@@ -11,18 +11,18 @@ export class UserTeamController {
 
     @Post('/')
     public insertPendingMember(
-        @Body() values: TeamJoinRequestDto
+        @Body() values: TeamMemberDto
     ): Promise<UserTeam> {
         return this.userTeamService.insertPendingMember(values);
     }
 
     @Put('/')
-    public acceptmember(@Body() values: TeamJoinRequestDto): Promise<UserTeam> {
+    public acceptmember(@Body() values: TeamMemberDto): Promise<UserTeam> {
         return this.userTeamService.acceptMember(values);
     }
 
     @Delete('/')
-    public declineMember(@Body() values: TeamJoinRequestDto): Promise<{}> {
-        return this.userTeamService.declineMember(values);
+    public deleteMember(@Body() values: TeamMemberDto): Promise<{}> {
+        return this.userTeamService.deleteMember(values);
     }
 }

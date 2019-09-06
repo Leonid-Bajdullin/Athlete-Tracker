@@ -160,6 +160,4 @@ export class UserService {
             return user;
         }
     }
-
-    // (err, decoded) => { this.accountRepository.find({where: {id:decoded.id}})}
 }
