@@ -19,6 +19,7 @@ import { UserCreateDto } from '../dto/user/UserCreateDto';
 import { UserProfileChangesDto } from '../dto/user/UserProfileChangesDto';
 import { CheckAuthMiddleware } from '../middlewares/CheckAuthMiddlware';
 import { TeamIdPositionDto } from '../dto/team/TeamIdPositionDto';
+import { UserNotAuthError } from '../errors/UserNotAuthError';
 
 // @Authorized()
 @JsonController('/users')
@@ -33,21 +34,22 @@ export class UserController {
     }
 
     @UseBefore(CheckAuthMiddleware)
-    @Get('/:id')
+    @Get('/user/:id')
     @OnUndefined(UserNotFoundError)
     public findOne(@Param('id') id: string): Promise<User | undefined> {
         return this.userService.findOne(id);
     }
 
-    // @UseBefore(CheckAuthMiddleware)
     @Get('/currentuser')
+    @OnUndefined(UserNotAuthError)
     public getCurrentUser(
         @HeaderParam('authorization') token: string
     ): Promise<User> {
+        console.log(`token ---> ${token}`);
         return this.userService.getCurrentUser(token);
     }
 
-    // @UseBefore(CheckAuthMiddleware)
+    @UseBefore(CheckAuthMiddleware)
     @Get('/:id/teams')
     public async findUserTeams(
         @Param('id') id: string
@@ -66,8 +68,8 @@ export class UserController {
     @Put('/:id')
     public update(
         @Param('id') id: string,
-        @Body() user: UserProfileChangesDto
-    ): Promise<User> {
+        @Body() user: any
+    ): Promise<UserProfileChangesDto> {
         return this.userService.update(id, user);
     }
 
