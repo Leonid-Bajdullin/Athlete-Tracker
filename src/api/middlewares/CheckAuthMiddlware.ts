@@ -42,20 +42,21 @@ export class CheckAuthMiddleware implements ExpressMiddlewareInterface {
                 }
             )
         );
-        passport.authenticate('jwt', { session: false }, (err, user) => {
+        passport.authenticate('jwt', { session: false }, (err, account) => {
+            this.log.info('account object => ', account);
             if (err) {
                 err.code = err.code || 403;
                 res.status(err.code).json({
                     code: err.code,
                     message: err.message
                 });
-            } else if (!user) {
+            } else if (!account) {
                 res.status(401).json({
                     message:
                         'User not authorized. You need to log in to access this route!'
                 });
             } else {
-                req.body = user;
+                req.body = account;
                 next();
             }
         })(req, res, next);
