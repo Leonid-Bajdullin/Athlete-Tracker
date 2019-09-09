@@ -52,14 +52,16 @@ export class UserService {
     public async getCurrentUser(token: string): Promise<User> {
         this.log.info('token ', token);
         if (!token) {
-            return null;
+            return undefined;
         } else {
             const realToken = token.split(' ')[1];
             const data: any = jwt.verify(realToken, env.jwt.jwt_secret);
+            this.log.info('data', data.id);
             const account = await this.accountRepository.findOne({
                 where: { id: data.id },
                 relations: ['user']
             });
+
             const user = account.user;
             return user;
         }
@@ -79,10 +81,7 @@ export class UserService {
                 relations: ['userTeams', 'userTeams.team']
             });
             return userWithTeams.userTeams.map((item) => {
-                return {
-                    id: item.team.id,
-                    position: item.position
-                };
+                return new TeamIdPositionDto(item);
             });
         }
     }
@@ -114,8 +113,8 @@ export class UserService {
         if (await bcrypt.compare(loginData.password, account.salt)) {
             const token = jwt.sign({ id: account.id }, env.jwt.jwt_secret);
             return {
-                token: token,
-                user: user
+                token,
+                user
             };
         }
 
@@ -123,11 +122,8 @@ export class UserService {
     }
 
     // PUT METHODS
-    public async update(
-        id: string,
-        user: UserProfileChangesDto
-    ): Promise<User> {
-        let { password, ...rest } = user;
+    public async update(id: string, user: any): Promise<UserProfileChangesDto> {
+        const { password, ...rest } = user;
         const updatedUser = Object.assign(
             await this.userRepository.findOne(id),
             rest
@@ -140,7 +136,9 @@ export class UserService {
             account.salt = newPassword;
             this.accountRepository.save(account);
         }
-        return await this.userRepository.save(updatedUser);
+        return new UserProfileChangesDto(
+            await this.userRepository.save(updatedUser)
+        );
     }
 
     // DELETE METHODS
